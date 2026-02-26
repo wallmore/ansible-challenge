@@ -34,7 +34,7 @@ pipeline {
       steps {
         sshagent(credentials: ['ec2-user']) {
           sh '''
-            cd /etc/ansible
+            cd ansible
             ansible-playbook -i inventory.ini linux.yml
             ansible-playbook -i inventory.ini backend.yml
             ansible-playbook -i inventory.ini frontend.yml
