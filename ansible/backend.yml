@@ -1,0 +1,46 @@
+---
+- name: Install and Configure Netdata Backend
+  hosts: backend
+  become: yes
+
+  tasks:
+
+    - name: Install required packages (Ubuntu/Debian)
+      apt:
+        update_cache: yes
+        name:
+          - curl
+        state: present
+      when: ansible_os_family == "Debian"
+
+    - name: Install required packages (RHEL/Amazon)
+      yum:
+        name:
+          - curl
+        state: present
+      when: ansible_os_family == "RedHat"
+
+    - name: Install Netdata from official repository
+      shell: |
+        bash <(curl -Ss https://my-netdata.io/kickstart.sh) --dont-wait
+      args:
+        creates: /usr/sbin/netdata
+
+    - name: Ensure Netdata binds to port 19999
+      lineinfile:
+        path: /etc/netdata/netdata.conf
+        regexp: '^\s*bind to ='
+        line: '    bind to = 0.0.0.0:19999'
+      notify: restart netdata
+
+    - name: Enable and start Netdata
+      service:
+        name: netdata
+        state: started
+        enabled: yes
+
+  handlers:
+    - name: restart netdata
+      service:
+        name: netdata
+        state: restarted
