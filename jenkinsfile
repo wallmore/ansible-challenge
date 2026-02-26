@@ -19,7 +19,7 @@ pipeline {
       steps {
         withCredentials([[
           $class: 'AmazonWebServicesCredentialsBinding',
-          credentialsId: 'aws'
+          credentialsId: 'aws-cred'
         ]]) {
           sh '''
             cd terraform
@@ -34,7 +34,7 @@ pipeline {
       steps {
         sshagent(credentials: ['ec2-user']) {
           sh '''
-            cd ansible
+            cd /etc/ansible
             ansible-playbook -i inventory.ini linux.yml
             ansible-playbook -i inventory.ini backend.yml
             ansible-playbook -i inventory.ini frontend.yml
