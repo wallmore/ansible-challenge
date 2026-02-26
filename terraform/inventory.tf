@@ -1,5 +1,5 @@
 resource "local_file" "ansible_inventory" {
-  filename = "/etc/ansible/inventory.ini"
+  filename = "${path.module}/../ansible/inventory.ini"
   content = <<EOF
 [frontend]
 c8.local ansible_host=${aws_instance.frontend.public_ip} ansible_user=ec2-user
